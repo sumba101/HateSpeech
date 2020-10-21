@@ -1,24 +1,14 @@
 # reference : https://towardsdatascience.com/text-classification-with-nlp-tf-idf-vs-word2vec-vs-bert-41ff868d1794
 import pickle
-
-import pandas as pd
-import numpy as np
-
-
 ## for processing
 import re
+
 import nltk
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-
+import pandas as pd
 ## for bag-of-words TFID and naive bayes
-from sklearn import feature_extraction, model_selection, naive_bayes, pipeline, manifold, preprocessing, metrics
-
-
-## for word embedding
-# import gensim
-# import gensim.downloader as gensim_api
-from sklearn.svm import LinearSVC
+from sklearn import pipeline, metrics
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
 
 
 def utils_preprocess_text(text, flg_stemm=False, flg_lemm=True, lst_stopwords=None):
@@ -74,23 +64,48 @@ def load(name):
 
 
 # loads the dataset
-df = pd.read_csv( "trainingSet.csv" )
+df = pd.read_csv( "./Datasets/trainingSet.csv" )
 x_train=df['clean_text']
 y_train = df["Hateful_or_not"]
-df2= pd.read_csv("testingSet.csv")
+df2= pd.read_csv("./Datasets/testingSet.csv")
 X_test=df2['clean_text']
 y_test=df2['Hateful_or_not']
 
 vectorizer = load("TFIDF")
 print(type(vectorizer))
 
-classifier = LinearSVC()
+# classifier = LogisticRegression(max_iter=10000)
+# classifier=naive_bayes.MultinomialNB()
+# classifier = SVC(kernel='linear')
+classifier = MLPClassifier(random_state=1,max_iter=10000)
 ## pipeline
 model1 = pipeline.Pipeline( [("vectorizer", vectorizer),
                                 ("classifier", classifier)] )
 
+print("Training ")
+
 model1["classifier"].fit( model1["vectorizer"].transform(x_train), y_train )
-
+print("Training done")
 predicted = model1.predict( X_test )
+print("Predictions done")
+print( metrics.classification_report( y_test, predicted ), file=open( "NeuralNetwork/Tfidf.txt", 'w' ) )
 
-print( metrics.classification_report( y_test, predicted ), file=open( "SVM/Tfidf.txt", 'w' ) )
+
+vectorizer = load("BOW")
+print(type(vectorizer))
+
+# classifier = LogisticRegression(max_iter=10000)
+# classifier=naive_bayes.MultinomialNB()
+# classifier = SVC(kernel='linear')
+classifier = MLPClassifier(random_state=1,max_iter=10000)
+## pipeline
+model = pipeline.Pipeline( [("vectorizer", vectorizer),
+                                ("classifier", classifier)] )
+
+print("Training ")
+
+model["classifier"].fit( model["vectorizer"].transform(x_train), y_train )
+print("Training done")
+predicted = model.predict( X_test )
+print("Predictions done")
+print( metrics.classification_report( y_test, predicted ), file=open( "NeuralNetwork/Bow.txt", 'w' ) )
