@@ -4,6 +4,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import SVC
+import xgboost as xgb
 
 df = pd.read_csv( "SimpleFeatures.csv")
 y = df.Hateful_or_not
@@ -36,3 +37,10 @@ y_pred3=lrClassifier.predict(X_test)
 with open('LogisticRegression/Simple.txt','a') as f:
     print( confusion_matrix( y_test, y_pred3 ), file=f )
     print( classification_report( y_test, y_pred3 ), file=f )
+
+xgClassifier = xgb.XGBClassifier(learning_rate=0.01)
+xgClassifier.fit(X_train,y_train)
+y_pred4=xgClassifier.predict(X_test)
+with open('XGBoost/Simple.txt','a') as f:
+    print( confusion_matrix( y_test, y_pred4 ), file=f )
+    print( classification_report( y_test, y_pred4 ), file=f )
