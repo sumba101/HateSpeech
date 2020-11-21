@@ -5,7 +5,13 @@ import pandas as pd
 import xgboost as xgb
 ## for bag-of-words TFID and naive bayes
 from sklearn import pipeline, metrics
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.naive_bayes import MultinomialNB
+import sklearn
 
+
+from w2v import MeanEmbeddingVectorizer
 
 ## for processing
 
@@ -69,11 +75,11 @@ df2= pd.read_csv("./Datasets/testingSet.csv")
 X_test=df2['clean_text']
 y_test=df2['Hateful_or_not']
 
-vectorizer = load("TFIDF")
+vectorizer = load("W2V")
 print(type(vectorizer))
 
 # classifier = LogisticRegression(max_iter=10000)
-# classifier=naive_bayes.MultinomialNB()
+# classifier=MultinomialNB()
 # classifier = SVC(kernel='linear')
 # classifier = MLPClassifier(random_state=1,max_iter=10000)
 classifier=xgb.XGBClassifier(learning_rate=0.01)
@@ -83,30 +89,30 @@ model1 = pipeline.Pipeline( [("vectorizer", vectorizer),
 
 print("Training ")
 
-model1["classifier"].fit( model1["vectorizer"].transform(x_train), y_train )
+model1["classifier"].fit(model1["vectorizer"].transform(x_train), y_train )
 print("Training done")
 predicted = model1.predict( X_test )
 print("Predictions done")
-print( metrics.classification_report( y_test, predicted ), file=open( "XGBoost/Tfidf.txt", 'w' ) )
+print( metrics.classification_report( y_test, predicted ), file=open( "XGBoost/w2v.txt", 'w' ) )
 
 
-vectorizer = load("BOW")
-print(type(vectorizer))
+# vectorizer = load("BOW")
+# print(type(vectorizer))
 
 # classifier = LogisticRegression(max_iter=10000)
 # classifier=naive_bayes.MultinomialNB()
 # classifier = SVC(kernel='linear')
 # classifier = MLPClassifier(random_state=1,max_iter=10000)
-classifier=xgb.XGBClassifier(learning_rate=0.01)
+# classifier=xgb.XGBClassifier(learning_rate=0.01)
 
 ## pipeline
-model = pipeline.Pipeline( [("vectorizer", vectorizer),
-                                ("classifier", classifier)] )
+# model = pipeline.Pipeline( [("vectorizer", vectorizer),
+ #                                ("classifier", classifier)] )
 
-print("Training ")
+# print("Training ")
 
-model["classifier"].fit( model["vectorizer"].transform(x_train), y_train )
-print("Training done")
-predicted = model.predict( X_test )
-print("Predictions done")
-print( metrics.classification_report( y_test, predicted ), file=open( "XGBoost/Bow.txt", 'w' ) )
+# model["classifier"].fit( model["vectorizer"].transform(x_train), y_train )
+# print("Training done")
+# predicted = model.predict( X_test )
+# print("Predictions done")
+# print( metrics.classification_report( y_test, predicted ), file=open( "XGBoost/Bow.txt", 'w' ) )
