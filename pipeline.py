@@ -12,6 +12,7 @@ import sklearn
 
 
 from w2v import MeanEmbeddingVectorizer
+from bert import bert_transformer
 
 ## for processing
 
