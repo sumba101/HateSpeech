@@ -25,8 +25,8 @@ class MeanEmbeddingVectorizer(object):
         ])
 
 if __name__=="__main__":
-    df = pd.read_csv("Datasets/trainingSet.csv")
-    x = list(df["clean_text"])
+    df = pd.read_csv("Datasets/unclean_train.csv", sep=";")
+    x = list(df["Comment_text"])
     lines = [k.split(" ") for k in x]
 
     model = gensim.models.Word2Vec(lines, size=100) 
