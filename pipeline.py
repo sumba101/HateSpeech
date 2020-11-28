@@ -1,4 +1,3 @@
-# reference : https://towardsdatascience.com/text-classification-with-nlp-tf-idf-vs-word2vec-vs-bert-41ff868d1794
 import pickle
 
 import pandas as pd
@@ -6,14 +5,12 @@ import xgboost as xgb
 ## for bag-of-words TFID and naive bayes
 from sklearn import pipeline, metrics
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
-import sklearn
-
-
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
 from w2v import MeanEmbeddingVectorizer
-from bert import bert_transformer
-
+from w2vtfidf import TfidfEmbeddingVectorizer
 ## for processing
 
 
@@ -69,36 +66,39 @@ def load(name):
 
 
 # loads the dataset
-df = pd.read_csv( "./Datasets/trainingSet.csv" )
-x_train=df['clean_text']
-y_train = df["Hateful_or_not"]
-df2= pd.read_csv("./Datasets/testingSet.csv")
-X_test=df2['clean_text']
-y_test=df2['Hateful_or_not']
+# df = pd.read_csv( "./Datasets/trainingSet.csv" )
+# x_train=df['clean_text']
+# y_train = df["Hateful_or_not"]
+# df2= pd.read_csv("./Datasets/testingSet.csv")
+# X_test=df2['clean_text']
+# y_test=df2['Hateful_or_not']
 
-vectorizer = load("W2V")
+df=pd.read_csv("Datasets/fulldataset.csv",sep=';')
+x_train, X_test, y_train, y_test = train_test_split(df.Comment_text, df.Hateful_or_not, test_size=0.30,shuffle=False)
+
+
+vectorizer = load("W2VTFIDF")
 print(type(vectorizer))
 
-# classifier = LogisticRegression(max_iter=10000)
-# classifier=MultinomialNB()
-# classifier = SVC(kernel='linear')
-# classifier = MLPClassifier(random_state=1,max_iter=10000)
-classifier=xgb.XGBClassifier(learning_rate=0.01)
-## pipeline
-model1 = pipeline.Pipeline( [("vectorizer", vectorizer),
-                                ("classifier", classifier)] )
+classifiers1=[LogisticRegression(max_iter=10000),MultinomialNB(),SVC(kernel='linear')]
+classifiers2=[MLPClassifier(random_state=1,max_iter=10000),xgb.XGBClassifier(learning_rate=0.01)]
+names1=['LogisticRegression','NaiveBayes','SVM']
+names2=['NeuralNetwork','XGBoost']
+for classifier,filename in zip(classifiers1,names1):
+    ## pipeline
+    model1 = pipeline.Pipeline( [("vectorizer", vectorizer),
+                                    ("classifier", classifier)] )
 
-print("Training ")
+    print(type(classifier))
+    print("Training")
 
-model1["classifier"].fit(model1["vectorizer"].transform(x_train), y_train )
-print("Training done")
-predicted = model1.predict( X_test )
-print("Predictions done")
-print( metrics.classification_report( y_test, predicted ), file=open( "XGBoost/w2v.txt", 'w' ) )
+    model1["classifier"].fit(model1["vectorizer"].transform(x_train), y_train )
+    print("Training done")
+    predicted = model1.predict( X_test )
+    print("Predictions done")
+    print( metrics.classification_report( y_test, predicted ), file=open( filename+"/w2v.txt", 'w' ) )
 
 
-# vectorizer = load("BOW")
-# print(type(vectorizer))
 
 # classifier = LogisticRegression(max_iter=10000)
 # classifier=naive_bayes.MultinomialNB()
