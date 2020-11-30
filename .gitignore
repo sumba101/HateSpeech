@@ -1,3 +1,4 @@
 .idea
 Datasets
 .env
+__pycache__

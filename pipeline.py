@@ -96,7 +96,7 @@ for classifier,filename in zip(classifiers1,names1):
     print("Training done")
     predicted = model1.predict( X_test )
     print("Predictions done")
-    print( metrics.classification_report( y_test, predicted ), file=open( filename+"/w2v.txt", 'w' ) )
+    print( metrics.classification_report( y_test, predicted ), file=open( filename+"/Bow.txt", 'w' ) )
 
 
 
@@ -116,4 +116,4 @@ for classifier,filename in zip(classifiers1,names1):
 # print("Training done")
 # predicted = model.predict( X_test )
 # print("Predictions done")
-# print( metrics.classification_report( y_test, predicted ), file=open( "XGBoost/Bow.txt", 'w' ) )
+# print( metrics.classification_report( y_test, predicted ), file=open( "XGBoost/Bert.txt", 'w' ) )
